@@ -37,7 +37,10 @@ pip install llama-cpp-python
 Next, you need to download the required model using the Hugging Face CLI
 
 ```bash
+# For small model
 huggingface-cli download TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf --local-dir ./models/ --local-dir-use-symlinks False
+
+#For bib model
 huggingface-cli download TheBloke/Llama-2-7B-Chat-GGUF llama-2-7b-chat.Q3_K_M.gguf --local-dir ./models/ --local-dir-use-symlinks False
 ```
 
