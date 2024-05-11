@@ -1,24 +1,48 @@
 import unittest
-from app import app  # Assuming your Flask app is named app.py
+from unittest.mock import patch
+from flask import json
 
-class TestChatEndpoint(unittest.TestCase):
+from app import app
+
+class TestAPIEndpoints(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
         self.app.testing = True
 
-    def test_process_message(self):
-        # Define the payload to send to your endpoint
-        payload = {
-            "userID": "123",
-            "conversationID": "456",
-            "messageText": "Hello, how are you?"
+    @patch('app.process_request')
+    def test_process_message_model1_success(self, mock_process_request):
+        mock_process_request.return_value = ("Response from model 1", False)
+
+        data = {
+            'userID': '123',
+            'conversationID': '456',
+            'messageText': 'Hello, how are you?'
         }
-        # Send a POST request to the endpoint with the payload
-        response = self.app.post('/process_message', json=payload)
-        # Check if the response status code is 200
+
+        response = self.app.post('/process_message1', data=json.dumps(data), content_type='application/json')
+        
         self.assertEqual(response.status_code, 200)
-        # Optionally, check if the response contains expected data
-        # self.assertIn('expected response content', response.data.decode())
+        self.assertIn('Response from model 1', response.data.decode())
+
+    @patch('app.process_request')
+    def test_process_message_model2_success(self, mock_process_request):
+        mock_process_request.return_value = ("Response from model 2", False)
+
+        data = {
+            'userID': '123',
+            'conversationID': '789',
+            'messageText': 'What is the weather today?'
+        }
+
+        response = self.app.post('/process_message2', data=json.dumps(data), content_type='application/json')
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Response from model 2', response.data.decode())
+
+    def test_invalid_request(self):
+        response = self.app.post('/process_message1', data=json.dumps({}), content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
 
 if __name__ == '__main__':
     unittest.main()
