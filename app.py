@@ -7,6 +7,8 @@ from llama_cpp import Llama
 
 app = Flask(__name__)
 
+os.makedirs('history', exist_ok=True)
+
 def initialize_llama(model_path):
     """ Helper to initialize Llama model """
     return Llama(model_path=model_path, chat_format="llama-2", n_gpu_layers=-1, verbose=False)
@@ -17,7 +19,7 @@ model2 = initialize_llama("./models/llama-2-7b-chat.Q3_K_M.gguf")
 
 def get_history(user_id, conversation_id):
     """ Retrieve messages from history if available """
-    filename = f"{user_id}_{conversation_id}.json"
+    filename = f"history/{user_id}_{conversation_id}.json"
     if os.path.exists(filename):
         with open(filename, 'r') as file:
             history = json.load(file)
@@ -26,7 +28,7 @@ def get_history(user_id, conversation_id):
 
 def save_history(user_id, conversation_id, messages):
     """ Save the updated conversation history """
-    filename = f"{user_id}_{conversation_id}.json"
+    filename = f"history/{user_id}_{conversation_id}.json"
     with open(filename, 'w') as file:
         json.dump(messages, file)
 
